@@ -19,12 +19,16 @@ def get_testing_logs_directory_path(
     return testing_logs_directory_path
 
 
+def run_panini():
+    from database.main import app
+    app.logger_files_path = get_testing_logs_directory_path()
+    app.start()
+
+
 class TestDatabase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        from database.main import app
-        app.logger_files_path = get_testing_logs_directory_path()
-        cls.test_client = TestClient(app.start).start()
+        cls.test_client = TestClient(run_panini).start(sleep_time=2)
 
     def test_create_task(self):
         response = self.test_client.request("create-task", {"title": "test"})

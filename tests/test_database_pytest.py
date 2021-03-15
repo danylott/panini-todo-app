@@ -20,11 +20,15 @@ def get_testing_logs_directory_path(
     return testing_logs_directory_path
 
 
-@pytest.fixture(scope="session")
-def test_client():
+def run_panini():
     from database.main import app
     app.logger_files_path = get_testing_logs_directory_path()
-    return TestClient(app.start).start()
+    app.start()
+
+
+@pytest.fixture(scope="session")
+def test_client():
+    return TestClient(run_panini).start(sleep_time=2)
 
 
 def test_create_task(test_client):
